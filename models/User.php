@@ -80,7 +80,10 @@ class User extends ActiveRecord implements \yii\web\IdentityInterface
         return \Yii::$app->security->validatePassword($password, $this->password);
     }
 
-
+    public function getDoctorVisits()
+    {
+        return $this->hasMany(DoctorVisits::class, ['user_id' => 'id']);
+    }
 
     public function behaviors()
     {

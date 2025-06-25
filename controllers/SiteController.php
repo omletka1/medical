@@ -6,6 +6,9 @@ use app\models\Application;
 use app\models\Bilet;
 use app\models\Category;
 use app\models\Comments;
+use app\models\DoctorVisits;
+use app\models\LabResults;
+use app\models\MedicationLogs;
 use app\models\News;
 use app\models\SignupForm;
 use Yii;
@@ -68,7 +71,55 @@ class SiteController extends Controller
      */
     public function actionIndex()
     {
-        return $this->render('index');
+        if (Yii::$app->user->isGuest) {
+            return $this->redirect(['site/login']);
+        }
+
+        // Статистика для врача
+        $todayVisits = DoctorVisits::find()
+            ->where(['doctor_id' => Yii::$app->user->id])
+            ->andWhere(['visit_date' => date('Y-m-d')])
+            ->count();
+
+        $totalPatients = DoctorVisits::find()
+            ->select('user_id')
+            ->where(['doctor_id' => Yii::$app->user->id])
+            ->distinct()
+            ->count();
+
+        $pendingResults = LabResults::find()
+            ->where(['user_id' => Yii::$app->user->id])
+            ->count();
+
+        $prescriptions = MedicationLogs::find()
+            ->where(['user_id' => Yii::$app->user->id])
+            ->count();
+
+        // Ближайшие записи
+        $upcomingVisits = DoctorVisits::find()
+            ->with('user')
+            ->where(['doctor_id' => Yii::$app->user->id])
+            ->andWhere(['>=', 'visit_date', date('Y-m-d')])
+            ->orderBy('visit_date ASC')
+            ->limit(5)
+            ->all();
+
+        // Последние результаты анализов
+        $recentResults = LabResults::find()
+            ->with('user')
+            ->where(['user_id' => Yii::$app->user->id])
+            ->orderBy('date_taken DESC')
+            ->limit(5)
+            ->all();
+
+        return $this->render('index', [
+            'todayVisits' => $todayVisits,
+            'totalPatients' => $totalPatients,
+            'pendingResults' => $pendingResults,
+            'prescriptions' => $prescriptions,
+            'upcomingVisits' => $upcomingVisits,
+            'recentResults' => $recentResults,
+        ]);
     }
 
     /**
