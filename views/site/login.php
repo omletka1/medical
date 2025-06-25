@@ -136,13 +136,24 @@ $this->params['breadcrumbs'][] = $this->title;
                         'inputOptions' => ['class' => 'form-control'],
                         'errorOptions' => ['class' => 'invalid-feedback'],
                     ],
+                    'enableClientValidation' => true,
+                    'validateOnBlur' => true,
+                    'validateOnChange' => true,
                 ]); ?>
 
-                <?= $form->field($model, 'username')
+                <?= $form->field($model, 'username', [
+                    'errorOptions' => [
+                        'encode' => false,
+                    ]
+                ])
                     ->textInput(['autofocus' => true, 'placeholder' => 'Введите ваш логин'])
                     ->label('Логин') ?>
 
-                <?= $form->field($model, 'password')
+                <?= $form->field($model, 'password', [
+                    'errorOptions' => [
+                        'encode' => false,
+                    ]
+                ])
                     ->passwordInput(['placeholder' => 'Введите ваш пароль'])
                     ->label('Пароль') ?>
 
@@ -150,7 +161,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     'template' => "<div class=\"form-check mb-3\">{input} {label}</div>\n<div>{error}</div>",
                     'class' => 'form-check-input',
                     'labelOptions' => ['class' => 'form-check-label']
-                ]) ?>
+                ])->label('Запомнить меня') ?>
 
                 <div class="form-group">
                     <?= Html::submitButton('Войти', ['class' => 'btn btn-login', 'name' => 'login-button']) ?>
@@ -158,10 +169,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
                 <?php ActiveForm::end(); ?>
 
-                <div class="login-help">
-                    Для теста вы можете войти с: <strong>admin/admin</strong> или <strong>demo/demo</strong>.<br>
-                    Для изменения данных пользователей проверьте <code>app\models\User::$users</code>.
-                </div>
+             
             </div>
         </div>
     </div>
